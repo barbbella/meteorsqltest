@@ -8,7 +8,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var pg = require('pg');
 var async = require('async');
-var conString = 'postgres://postgres:1234@localhost/dvdrental';
+var conString = 'postgres://vvafxtcxuwwrzw:xH-VdFtOapbhMzJRCwN2gCvUGZ@ec2-107-22-173-230.compute-1.amazonaws.com:5432/dbqqasbfcvstcc/user';
 var app = express();
 
 // view engine setup
@@ -55,7 +55,7 @@ var createIndex = function (){
 var insert = function(callback) {
   pg.connect(conString, function(err, client, done) {
     console.log(err);
-    var film = {"title": "Test Italian", "length": 117, "rating": "NC-17", "film_id": 133, "fulltext": "'chamber':1 'fate':4 'husband':11 'italian':2 'monkey':16 'moos':8 'must':13 'nigeria':18 'overcom':14 'reflect':5", "description": "A Fateful Reflection of a Moose And a Husband who must Overcome a Monkey in Nigeria", "language_id": 1, "last_update": "2013-05-26T14:50:58.951", "rental_rate": 4.99, "release_year": 2006, "rental_duration": 7, "replacement_cost": 14.99, "special_features": ["Trailers"]};
+    var film = {"title": "Test Data Test", "length": 117, "rating": "NC-17", "film_id": 133, "fulltext": "'chamber':1 'fate':4 'husband':11 'italian':2 'monkey':16 'moos':8 'must':13 'nigeria':18 'overcom':14 'reflect':5", "description": "A Fateful Reflection of a Moose And a Husband who must Overcome a Monkey in Nigeria", "language_id": 1, "last_update": "2013-05-26T14:50:58.951", "rental_rate": 4.99, "release_year": 2006, "rental_duration": 7, "replacement_cost": 14.99, "special_features": ["Trailers"]};
     var insert = 'INSERT INTO film_docs (data) values ($1)';
     client.query(insert, [film], function(error, results) {
       console.log("error in inserts", error);
@@ -70,7 +70,7 @@ var find = function(element, callback) {
   pg.connect(conString, function(err, client, done){
     console.log(err);
     //console.log(client, 1234);
-    var element = {title: "Test Italian"};
+    var element = {title: "Test Data Test"};
     var find = "SELECT (data ->> 'title') as Title, (data -> 'length') as Length FROM film_docs WHERE data @> $1";
     client.query(find, [element], function(error, results) {
       console.log("find results", results);
@@ -85,10 +85,10 @@ var find = function(element, callback) {
 var update = function(callback) {
   pg.connect(conString, function(err, client, done){
     console.log(err);
-    var data = {title: "Chamber Italian"};
-    var newdata = {"title": "Test test", "length": 117, "rating": "NC-17", "film_id": 133, "fulltext": "'chamber':1 'fate':4 'husband':11 'italian':2 'monkey':16 'moos':8 'must':13 'nigeria':18 'overcom':14 'reflect':5", "description": "A Fateful Reflection of a Moose And a Husband who must Overcome a Monkey in Nigeria", "language_id": 1, "last_update": "2013-05-26T14:50:58.951", "rental_rate": 4.99, "release_year": 2006, "rental_duration": 7, "replacement_cost": 14.99, "special_features": ["Trailers"]};
+    var data = {title: "Test Test"};
+    var newdata = {"title": "Chamber Italian", "length": 117, "rating": "NC-17", "film_id": 133, "fulltext": "'chamber':1 'fate':4 'husband':11 'italian':2 'monkey':16 'moos':8 'must':13 'nigeria':18 'overcom':14 'reflect':5", "description": "A Fateful Reflection of a Moose And a Husband who must Overcome a Monkey in Nigeria", "language_id": 1, "last_update": "2013-05-26T14:50:58.951", "rental_rate": 4.99, "release_year": 2006, "rental_duration": 7, "replacement_cost": 14.99, "special_features": ["Trailers"]};
     var update = "update film_docs set data = $1 where data @> $2";
-    client.query(update, [data], function(error, results){
+    client.query(update, [newdata, data], function(error, results){
       console.log("error in update", error);
       console.log("error in results", results);
       done();
