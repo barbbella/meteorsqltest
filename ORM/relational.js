@@ -4,22 +4,7 @@
 var pg = require('pg');
 var conString = 'postgres://vvafxtcxuwwrzw:xH-VdFtOapbhMzJRCwN2gCvUGZ@ec2-107-22-173-230.compute-1.amazonaws.com:5432/dbqqasbfcvstcc/user';
 
-var createTable = function(name) {
-  pg.connect(conString, function(err, client, done) {
-    console.log(err);
-    var create = 'CREATE TABLE $1 (id serial primary key not null, )';
-
-    client.query(create, ["paulo"], function(error, results) {
-      console.log("error in inserts", error);
-      console.log("results in inserts", results);
-      done();
-    });
-  });
-};
-
 var db = {};
-// object = {field name: data types, constraint}
-//
 /**
  * TODO: add relationships? helper tables? triggers?
  * @param name
@@ -76,3 +61,66 @@ db.prototype.select = function(name, object) {
     });
   });
 };
+
+/**
+ * TODO:
+ * @param {string} name
+ * @param {array} fieldNames
+ * @param {array} values
+ */
+db.prototype.insert = function(name, fieldNames, values) {
+  // 'INSERT INTO table (fields) VALUES (values);'
+  // data parameters options (name directly passed in)
+  var initString = 'INSERT INTO ' + name + ' (';
+  var valueString = ') VALUES (';
+  for (var i = 0, count = fieldNames.length-1; i < count; ) {
+    initString += fieldNames[i] + ', ';
+    valueString += '$' + (++i) + ', ';
+  }
+  // 'INSERT INTO ' + name + ' (' + fieldNames
+  initString += fieldNames[fieldNames.length-1] + valueString + '$' + fieldNames.length + ');';
+  pg.connect(conString, function(err, client, done) {
+    console.log(err);
+    client.query(initString, values, function(error, results) {
+      console.log("error in insert " + name, error);
+      console.log("results in insert " + name, results);
+      done();
+    });
+  });
+};
+
+/**
+ * TODO: update
+ * @param {string} name
+ * @param {array} fieldNames
+ * @param {array} values
+ * @param {object} where
+ * @param {conditionalString} object.fieldNames
+ */
+// where = { fieldName: conditionalString } truthy value?
+db.prototype.update = function(name, fieldNames, values, where) {
+  // 'UPDATE table SET fieldName  = value WHERE parameters;'
+  var initString = 'UPDATE ' + name + ' SET '; // field names
+  var valueString = ' = '; // where params
+  var whereString = 'WHERE ';
+  for (var i = 0, count = fieldNames.length-1; i < count; ) {
+    initString += fieldNames[i] + ', ';
+    valueString += '$' + (++i) + ', ';
+  }
+  for (var field in where) {
+    whereString += field + where[field] +', ';
+  }
+  whereString = whereString.substring(0, whereString.length-2);
+  // 'INSERT INTO ' + name + ' (' + fieldNames
+  initString += fieldNames[fieldNames.length-1] + valueString + '$' + fieldNames.length + whereString + ';';
+  pg.connect(conString, function(err, client, done) {
+    console.log(err);
+    client.query(initString, values, function(error, results) {
+      console.log("error in insert " + name, error);
+      console.log("results in insert " + name, results);
+      done();
+    });
+  });
+};
+
+module.exports = db;
