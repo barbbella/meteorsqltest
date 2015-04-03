@@ -8,9 +8,23 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var pg = require('pg');
 var async = require('async');
-var db = require('./ORM/relational.js');
-var conString = 'postgres://vvafxtcxuwwrzw:xH-VdFtOapbhMzJRCwN2gCvUGZ@ec2-107-22-173-230.compute-1.amazonaws.com:5432/dbqqasbfcvstcc/user';
+var db = require('./relational');
+var conString = 'postgres://postgres:1234@localhost/postgres';
 var app = express();
+
+//postgres://vvafxtcxuwwrzw:xH-VdFtOapbhMzJRCwN2gCvUGZ@ec2-107-22-173-230.compute-1.amazonaws.com:5432/dbqqasbfcvstcc
+
+//var client = new pg.Client({
+//  user: "admin",
+//  password: "guest",
+//  database: "Employees",
+//  port: 5432,
+//  host: "localhost",
+//  ssl: true
+//});
+//client.connect();
+
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -118,17 +132,36 @@ var update = function(callback) {
 //  });
 //};
 
-async.series([
-  //function(callback){
-  //  insert(callback);
-  //},
-  function(callback){
-    find("hello", callback);
-  },
-  function(callback){
-    update(callback);
-  }
-]);
+//async.series([
+//  //function(callback){
+//  //  insert(callback);
+//  //},
+//  function(callback){
+//    find("hello", callback);
+//  },
+//  function(callback){
+//    update(callback);
+//  }
+//]);
+var newTable = {
+  username: ['varchar (100)', 'not null'],
+  password: ['varchar (100)', 'not null'],
+  name: ['varchar (255)', 'not null unique']
+};
+
+var select = {
+
+};
+
+var where = {
+  name: " = 'paulo'"
+};
+
+//db.createTable('users', newTable);
+//db.insert('users', ['username', 'password', 'name'], ['pdiniz', 1234, 'paulo']);
+db.update('users', ["name"], ["Paulo2"], where);
+db.select('users', select);
+
 //find('film_id', 'title');
 //console.log(userArray);
 
